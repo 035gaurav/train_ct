@@ -16,8 +16,9 @@ function App() {
     setError("");
     
     try {
+      // FIXED: Removed http://localhost:5000 so it works on AWS via Nginx
       const response = await fetch(
-        `http://localhost:5000/api/trains/between?from=${from.toUpperCase()}&to=${to.toUpperCase()}`
+        `/api/trains/between?from=${from.toUpperCase()}&to=${to.toUpperCase()}`
       );
       const result = await response.json();
 
@@ -62,7 +63,7 @@ function App() {
             <h3>{train.trainName} <span>({train.trainNumber})</span></h3>
             <div className="details">
               <p><strong>Type:</strong> {train.type}</p>
-              <p><strong>Runs On:</strong> {train.runningDays?.days?.join(", ")}</p>
+              <p><strong>Runs On:</strong> {train.runningDays?.days?.join(", ") || "N/A"}</p>
             </div>
           </div>
         ))}
