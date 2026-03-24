@@ -1,0 +1,8 @@
+.container { max-width: 800px; margin: 40px auto; font-family: sans-serif; padding: 20px; }
+.search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+input { padding: 12px; border: 1px solid #ddd; border-radius: 4px; flex: 1; }
+button { padding: 12px 24px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+.train-card { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.train-card h3 { margin-top: 0; color: #333; }
+.train-card span { font-size: 0.8em; color: #666; }
+.error { color: red; font-weight: bold; }
