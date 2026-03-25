@@ -6,18 +6,32 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// ✅ Allow frontend requests
+app.use(cors({
+  origin: "*"
+}));
+
 app.use(express.json());
 
+// ✅ Environment variables
 const API_KEY = process.env.RAILRADAR_API_KEY;
 const BASE_URL = "https://api.railradar.org/api/v1";
 
-// Route to search trains between stations
+// ✅ Health check (important for deployment)
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running");
+});
+
+// ✅ API route
 app.get("/api/trains/between", async (req, res) => {
   const { from, to } = req.query;
 
   if (!from || !to) {
-    return res.status(400).json({ success: false, message: "From and To codes required" });
+    return res.status(400).json({
+      success: false,
+      message: "From and To codes required"
+    });
   }
 
   try {
@@ -25,12 +39,25 @@ app.get("/api/trains/between", async (req, res) => {
       params: { from, to },
       headers: { "X-API-Key": API_KEY }
     });
-    res.json(response.data);
+
+    res.json({
+      success: true,
+      data: response.data
+    });
+
   } catch (error) {
     console.error("API Error:", error.response?.data || error.message);
-    res.status(500).json({ success: false, message: "RailRadar API failed" });
+
+    res.status(500).json({
+      success: false,
+      message: "RailRadar API failed"
+    });
   }
 });
 
+// ✅ IMPORTANT: bind to 0.0.0.0 (for EC2/Jenkins)
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
+});

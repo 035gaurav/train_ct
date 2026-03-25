@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
 
+// ✅ Use ENV (no localhost hardcoding)
+const API_URL = process.env.REACT_APP_API_URL;
+
 function App() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -10,16 +13,19 @@ function App() {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!from || !to) return alert("Enter both station codes");
+
+    if (!from || !to) {
+      return alert("Enter both station codes");
+    }
 
     setLoading(true);
     setError("");
-    
+
     try {
-      // FIXED: Removed http://localhost:5000 so it works on AWS via Nginx
       const response = await fetch(
-        `/api/trains/between?from=${from.toUpperCase()}&to=${to.toUpperCase()}`
+        `${API_URL}/trains/between?from=${from.toUpperCase()}&to=${to.toUpperCase()}`
       );
+
       const result = await response.json();
 
       if (result.success && result.data.trains) {
@@ -28,6 +34,7 @@ function App() {
         setTrains([]);
         setError("No trains found for this route.");
       }
+
     } catch (err) {
       setError("Failed to connect to backend.");
     } finally {
@@ -38,21 +45,25 @@ function App() {
   return (
     <div className="container">
       <h1>🚂 Indian Railways Search</h1>
-      
+
       <form onSubmit={handleSearch} className="search-box">
-        <input 
-          type="text" 
-          placeholder="From (e.g. NDLS)" 
-          value={from} 
-          onChange={(e) => setFrom(e.target.value)} 
+        <input
+          type="text"
+          placeholder="From (NDLS)"
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
         />
-        <input 
-          type="text" 
-          placeholder="To (e.g. BCT)" 
-          value={to} 
-          onChange={(e) => setTo(e.target.value)} 
+
+        <input
+          type="text"
+          placeholder="To (BCT)"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
         />
-        <button type="submit">{loading ? "Searching..." : "Search Trains"}</button>
+
+        <button type="submit">
+          {loading ? "Searching..." : "Search Trains"}
+        </button>
       </form>
 
       {error && <p className="error">{error}</p>}
@@ -60,11 +71,15 @@ function App() {
       <div className="results">
         {trains.map((train) => (
           <div key={train.trainNumber} className="train-card">
-            <h3>{train.trainName} <span>({train.trainNumber})</span></h3>
-            <div className="details">
-              <p><strong>Type:</strong> {train.type}</p>
-              <p><strong>Runs On:</strong> {train.runningDays?.days?.join(", ") || "N/A"}</p>
-            </div>
+            <h3>
+              {train.trainName} ({train.trainNumber})
+            </h3>
+
+            <p><strong>Type:</strong> {train.type}</p>
+            <p>
+              <strong>Runs On:</strong>{" "}
+              {train.runningDays?.days?.join(", ") || "N/A"}
+            </p>
           </div>
         ))}
       </div>
