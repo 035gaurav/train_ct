@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import "./App.css";
 
-// ✅ Use ENV (no localhost hardcoding)
-const API_URL = process.env.REACT_APP_API_URL;
+// ✅ FIXED: fallback added (VERY IMPORTANT)
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  "http://ec2-13-53-129-150.eu-north-1.compute.amazonaws.com:5000/api";
 
 function App() {
   const [from, setFrom] = useState("");
@@ -28,7 +30,7 @@ function App() {
 
       const result = await response.json();
 
-      if (result.success && result.data.trains) {
+      if (result.success && result.data?.trains) {
         setTrains(result.data.trains);
       } else {
         setTrains([]);
@@ -36,6 +38,7 @@ function App() {
       }
 
     } catch (err) {
+      console.error(err);
       setError("Failed to connect to backend.");
     } finally {
       setLoading(false);
