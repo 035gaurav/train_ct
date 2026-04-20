@@ -7,23 +7,22 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Allow frontend (better than "*")
 app.use(cors({
-  origin: "*", // you can restrict later
+  origin: "*",
 }));
 
 app.use(express.json());
 
-// ✅ ENV
+// ENV
 const API_KEY = process.env.RAILRADAR_API_KEY;
 const BASE_URL = "https://api.railradar.org/api/v1";
 
-// ✅ Health check
+// Health check
 app.get("/", (req, res) => {
   res.send("🚀 Backend is running");
 });
 
-// ✅ API route
+// ✅ CLEAN RESPONSE (FIXED)
 app.get("/api/trains/between", async (req, res) => {
   const { from, to } = req.query;
 
@@ -40,9 +39,10 @@ app.get("/api/trains/between", async (req, res) => {
       headers: { "X-API-Key": API_KEY }
     });
 
+    // ✅ SIMPLIFIED RESPONSE
     res.json({
       success: true,
-      data: response.data
+      trains: response.data?.data?.trains || []
     });
 
   } catch (error) {
@@ -55,7 +55,7 @@ app.get("/api/trains/between", async (req, res) => {
   }
 });
 
-// ✅ Bind to all IPs (IMPORTANT for AWS)
+// Bind
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
