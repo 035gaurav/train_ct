@@ -4,7 +4,7 @@ import "./App.css";
 // ✅ FIXED: fallback added (VERY IMPORTANT)
 const API_URL =
   process.env.REACT_APP_API_URL ||
-  "http://ec2-13-53-129-150.eu-north-1.compute.amazonaws.com:5000/api";
+  "http://13.48.30.20:5000/api";
 
 function App() {
   const [from, setFrom] = useState("");
